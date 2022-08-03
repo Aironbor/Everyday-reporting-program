@@ -3,20 +3,26 @@ import platform
 from glob import glob
 
 
+from setuptools import setup
+import platform
+from glob import glob
+
 SETUP_DICT = {
 
-    'name': 'Программа для управления отчетами',
-    'version': '2.0',
-    'description': 'Программа для управления отчетами',
+    'name': 'Программа формирования производственных заданий',
+    'version': '1.0',
+    'description': 'Программа формирования производственных заданий',
     'author': 'Ivan Metliaev',
     'author_email': 'ivan.metliaev.helper@gmail.com',
 
     'data_files': (
         ('', glob(r'C:\Windows\SYSTEM32\msvcp100.dll')),
         ('', glob(r'C:\Windows\SYSTEM32\msvcr100.dll')),
-        ('platforms', glob(r'C:\Program Files (x86)\Python38-32\Lib\site-packages\PyQt5\Qt\plugins\platforms\qwindows.dll')),
-        ('images', ['images/report.png']),
-        ('sqldrivers', glob('C:\Program Files (x86)\Python38-32\Lib\site-packages\PyQt5\Qt\plugins\sqldrivers\qsqlite.dll')),
+        ('platforms', glob(r'C:\Users\IvanW\AppData\Local\Programs\Python\Python39\Lib\site-packages\PyQt5\Qt5\plugins\platforms\qwindows.dll')),
+        ('sqldrivers', glob(r'C:\Users\IvanW\AppData\Local\Programs\Python\Python39\Lib\site-packages\PyQt5\Qt5\plugins\sqldrivers\qsqlite.dll')),
+        ('qtcoredrivers', glob(r'C:\Users\IvanW\AppData\Local\Programs\Python\Python39\Lib\site-packages\PyQt5\Qt5\bin\Qt5Core.dll')),
+        ('qtguidrivers', glob(r'C:\Users\IvanW\AppData\Local\Programs\Python\Python39\Lib\site-packages\PyQt5\Qt5\bin\Qt5Gui.dll')),
+        ('qtwidgetdrivers', glob(r'C:\Users\IvanW\AppData\Local\Programs\Python\Python39\Lib\site-packages\PyQt5\Qt5\bin\Qt5Widgets.dll')),
     ),
     'windows': [{'script': 'main_script.py'}],
     'options': {
@@ -31,7 +37,7 @@ if platform.system() == 'Windows':
     SETUP_DICT['windows'] = [{
         'Name': 'Ivan Metliaev',
         'product_name': 'Программа для управления отчетами',
-        'version': '3.1',
+        'version': '3.2',
         'description': 'Программа cоздана Метляевым Иваном специально для ООО "Тентовые Конструкции"',
         'copyright': '© 2022, ivan.metliaev.helper@gmail.com. All Rights Reserved',
         'script': 'main_script.py',

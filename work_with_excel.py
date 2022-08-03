@@ -293,16 +293,20 @@ class ExcelWork():
             worksheet_1.set_column(3, 4, 15)
             worksheet_1.set_column(3, 5, 15)
             worksheet_1.set_column(3, 6, 15)
-            worksheet_1.set_column(7, 7, 18)
+            worksheet_1.set_column(3, 7, 15)
+            worksheet_1.set_column(3, 8, 15)
+            worksheet_1.set_column(4, 9, 18)
             # Записи Ход изготовления ангара
-            worksheet_1.merge_range(0, 0, 0, 7, f'Производственный отчет нарастающим итогом на отчетную дату', name_merge_format_spec)
+            worksheet_1.merge_range(0, 0, 0, 9, f'Производственный отчет нарастающим итогом на отчетную дату', name_merge_format_spec)
             worksheet_1.write(1, 0, "Проект:", name_format)
-            worksheet_1.merge_range(1, 1, 1, 7, f' ,'.join(progect_in_work), name_merge_format)
-            worksheet_1.merge_range(2, 0, 2, 7, f'Утеплитель', name_merge_format_2)
+            worksheet_1.merge_range(1, 1, 1, 9, f' ,'.join(progect_in_work), name_merge_format)
+            worksheet_1.merge_range(2, 0, 2, 9, f'Утеплитель', name_merge_format_2)
             row_name = ['№', 'Дата', 'Раскрой полипропилена',
+                        'Пришить крючки и петли',
                         'Сшивка полипропилена',
                         'Наклейка синтепона',
                         'Пробивка люверс',
+                        'Сборка',
                         'Упаковано',
                         'Общая готовность утеплителя']
             # Заголовки первой таблицы
@@ -317,16 +321,26 @@ class ExcelWork():
                 worksheet_1.write(curnt_numb_row, 1, info[2], date_format)
                 # % Раскрой полипропилена
                 worksheet_1.write(curnt_numb_row, 2, info[3] / 100, percent_format)
+                # % Пришить крючки и петли
+                if info[4] is not None:
+                    worksheet_1.write(curnt_numb_row, 3, info[4] / 100, percent_format)
+                else:
+                    worksheet_1.write(curnt_numb_row, 3, '-', percent_format)
                 # % сшивка полипропилена
-                worksheet_1.write(curnt_numb_row, 3, info[4] / 100, percent_format)
-                # % Наклейка
                 worksheet_1.write(curnt_numb_row, 4, info[5] / 100, percent_format)
-                # % Пробивка люверс
+                # % Наклейка
                 worksheet_1.write(curnt_numb_row, 5, info[6] / 100, percent_format)
-                # % Упаковка
-                worksheet_1.write(curnt_numb_row, 6, info[7] / 100, percent_format)
-                # % готовности утеплителя
+                # % Сборка
+                if info[7] is not None:
+                    worksheet_1.write(curnt_numb_row, 6, info[7] / 100, percent_format)
+                else:
+                    worksheet_1.write(curnt_numb_row, 6, '-', percent_format)
+                # % Пробивка люверс
                 worksheet_1.write(curnt_numb_row, 7, info[8] / 100, percent_format)
+                # % Упаковка
+                worksheet_1.write(curnt_numb_row, 8, info[9] / 100, percent_format)
+                # % готовности утеплителя
+                worksheet_1.write(curnt_numb_row, 9, info[10] / 100, percent_format)
                 curnt_numb_row += 1
 
             worksheet_1.conditional_format(4, 2, curnt_numb_row, 7, {'type': 'data_bar'})

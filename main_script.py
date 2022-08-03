@@ -1251,13 +1251,17 @@ class AddData(QMainWindow):
                     or 'утеплитель' in self.filename or 'Утеплитель' in self.filename or 'теплит' in self.filename:
                 # Значение площади по проекту
                 rpolym_squer = 0
+                sew_loops_squer = 0
                 stit_spu_squer = 0
                 gloe_p_squer = 0
+                assembl_p_squer = 0
                 punch_l_squer = 0
                 # Значение площади изготовленной продукции на тек. момент
                 rpolym_ready_squer = 0
+                sew_loops_ready_squer = 0
                 stit_spu_ready_squer = 0
                 gloe_p_ready_squer = 0
+                assembl_p_ready_squer = 0
                 punch_l_ready_squer = 0
                 try:
                     sheet_1 = wb[f"Раскрой полипропилена"]
@@ -1271,10 +1275,21 @@ class AddData(QMainWindow):
                     self.MainWindow.show()
 
                 try:
-                    sheet_2 = wb[f'Сшивка полипропилена']
-                    stitching = round((sheet_2['K3'].value * 100), 2)
-                    stit_spu_squer = round((sheet_2['G3'].value), 2)
-                    stit_spu_ready_squer = round((sheet_2['M3'].value), 2)
+                    sheet_2 = wb[f'Пришить крючки и петли']
+                    sew_loops = round((sheet_2['K3'].value * 100), 2)
+                    sew_loops_squer = round((sheet_2['G3'].value), 2)
+                    sew_loops_ready_squer = round((sheet_2['M3'].value), 2)
+                    self.data_perc.append(sew_loops)
+                except:
+                    error = 'Отсутсвует значение в ячейках K3, G3, M3 (Пришить крючки и петли). Исправьте файл.'
+                    self.MainWindow = ErrorAddReport(error)
+                    self.MainWindow.show()
+
+                try:
+                    sheet_3 = wb[f'Сшивка полипропилена']
+                    stitching = round((sheet_3['K3'].value * 100), 2)
+                    stit_spu_squer = round((sheet_3['G3'].value), 2)
+                    stit_spu_ready_squer = round((sheet_3['M3'].value), 2)
                     self.data_perc.append(stitching)
                 except:
                     error = 'Отсутсвует значение в ячейках K3, G3, M3 (Сшивка полипропилена). Исправьте файл.'
@@ -1282,10 +1297,10 @@ class AddData(QMainWindow):
                     self.MainWindow.show()
 
                 try:
-                    sheet_3 = wb[f'Наклейка синтепона']
-                    gloe_polypr = round((sheet_3['J3'].value * 100), 2)
-                    gloe_p_squer = round((sheet_3['F3'].value), 2)
-                    gloe_p_ready_squer = round((sheet_3['L3'].value), 2)
+                    sheet_4 = wb[f'Наклейка синтепона']
+                    gloe_polypr = round((sheet_4['J3'].value * 100), 2)
+                    gloe_p_squer = round((sheet_4['F3'].value), 2)
+                    gloe_p_ready_squer = round((sheet_4['L3'].value), 2)
                     self.data_perc.append(gloe_polypr)
                 except:
                     error = 'Отсутсвует значение в ячейках J3, F3, L3 (Наклейка синтепона). Исправьте файл.'
@@ -1293,10 +1308,21 @@ class AddData(QMainWindow):
                     self.MainWindow.show()
 
                 try:
-                    sheet_4 = wb[f'Пробивка люверс']
-                    punch_luverc = round((sheet_4['J3'].value * 100), 2)
-                    punch_l_squer = round((sheet_4['F3'].value), 2)
-                    punch_l_ready_squer = round((sheet_4['L3'].value), 2)
+                    sheet_5 = wb[f'Сборка']
+                    assembl_polypr = round((sheet_5['J3'].value * 100), 2)
+                    assembl_p_squer = round((sheet_5['F3'].value), 2)
+                    assembl_p_ready_squer = round((sheet_5['L3'].value), 2)
+                    self.data_perc.append(assembl_polypr)
+                except:
+                    error = 'Отсутсвует значение в ячейках J3, F3, L3 (Сборка). Исправьте файл.'
+                    self.MainWindow = ErrorAddReport(error)
+                    self.MainWindow.show()
+
+                try:
+                    sheet_6 = wb[f'Пробивка люверс']
+                    punch_luverc = round((sheet_6['J3'].value * 100), 2)
+                    punch_l_squer = round((sheet_6['F3'].value), 2)
+                    punch_l_ready_squer = round((sheet_6['L3'].value), 2)
                     self.data_perc.append(punch_luverc)
                 except:
                     error = 'Отсутсвует значение в ячейках J3, F3, L3 (Пробивка люверс). Исправьте файл.'
@@ -1304,20 +1330,17 @@ class AddData(QMainWindow):
                     self.MainWindow.show()
 
                 try:
-                    try:
-                        sheet_5 = wb[f'Упаковка']
-                        ready_prod = round((sheet_5['J3'].value * 100), 2)
-                        self.data_perc.append(ready_prod)
-                    except:
-                        sheet_5 = wb[f'Упаковка продукции']
-                        ready_prod = round((sheet_5['J3'].value * 100), 2)
-                        self.data_perc.append(ready_prod)
+                    sheet_7 = wb[f'Упаковка']
+                    ready_prod = round((sheet_7['J3'].value * 100), 2)
+                    self.data_perc.append(ready_prod)
                 except:
                     error = 'Отсутсвует значение в ячейке J3 (5 лист). Исправьте файл.'
                     self.MainWindow = ErrorAddReport(error)
                     self.MainWindow.show()
-                squer_data_spu = [rpolym_ready_squer, stit_spu_ready_squer, gloe_p_ready_squer, punch_l_ready_squer]
-                common_summ_squer_from_prog = rpolym_squer + stit_spu_squer + gloe_p_squer + punch_l_squer
+                squer_data_spu = [rpolym_ready_squer, sew_loops_ready_squer, stit_spu_ready_squer,
+                                  gloe_p_ready_squer, assembl_p_ready_squer, punch_l_ready_squer]
+                common_summ_squer_from_prog = rpolym_squer + sew_loops_squer + stit_spu_squer\
+                                              + gloe_p_squer + assembl_p_squer + punch_l_squer
                 common_proc = 0
                 summ_ready_squer_spu = 0
                 for squer in squer_data_spu:
@@ -1468,9 +1491,9 @@ class AddData(QMainWindow):
                 elif 'СПУ' in self.filename or 'утеплит' in self.filename \
                          or 'утеплитель' in self.filename or 'Утеплитель' in self.filename or 'теплит' in self.filename:
                     db.delit_report_spu_data(progect_name, date)
-                    db.add_report_spu(progect_name, date, self.data_perc[0], self.data_perc[1],
-                                      self.data_perc[2], self.data_perc[3], self.data_perc[4],
-                                      self.data_perc[5], self.data_perc[6], self.data_perc[7], key, real_date)
+                    db.add_report_spu(progect_name, date, self.data_perc[0], self.data_perc[1], self.data_perc[2],
+                                      self.data_perc[3], self.data_perc[4], self.data_perc[5], self.data_perc[6],
+                                      self.data_perc[7], self.data_perc[8], self.data_perc[9], key, real_date)
                 elif 'ПВХ' in self.filename or 'пвх' in self.filename or 'тентовое' in self.filename \
                          or 'полотно' in self.filename or 'тент' in self.filename:
                     db.delit_report_pvh_data(progect_name, date)
