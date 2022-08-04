@@ -12,7 +12,7 @@ from openpyxl import load_workbook
 from config import db
 
 
-class ExcelWork():
+class ExcelWork:
     def __init__(self, t_progect, n_date, date_for_plan):
         super().__init__()
         self.type_prog = t_progect
