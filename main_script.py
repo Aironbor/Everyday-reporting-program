@@ -1595,48 +1595,54 @@ class PrintReport(QMainWindow):
     def __init__(self, parent=None, flag=Qt.Window):
         super().__init__(parent, flag)
         uic.loadUi('ui/report_print.ui', self)
+        # Выводим отчет согласно настройкам меню
         self.option_menu = int(re.search('\d+', str(db.get_menu_main())).group(0))
         if self.option_menu == 2:
+            # Отчет по производству
             self.print_reportButton.clicked.connect(self.report_bd_push)
         elif self.option_menu == 3:
+            # Отчет по монтажам
             self.print_reportButton.clicked.connect(self.report_montage_bd_push)
             self.label_2.clear()
             self.label_2.setText('Выберите дату, за которую хотите получить производственный отчет')
             self.type_progBox.hide()
             self.label_3.clear()
         self.backButton.clicked.connect(self.back_btn_push)
-
         self.dateEdit.setDate(QtCore.QDate.currentDate())
         self.dateEdit.setDisplayFormat('dd.MM.yyyy')
 
     def back_btn_push(self):
+        # Кнопка назад
         self.close()
         self.MainWindow = Main_menu()
         self.MainWindow.show()
 
     def report_bd_push(self):
+        # Кнопка вывода отчета по производству
         try:
             type_progect = self.type_progBox.currentText()
             date = self.dateEdit.date().toString('dd MMM yy')
             date_for_plan = self.dateEdit.date().toString('MMMM yyyy')
             excel(type_progect, date, date_for_plan)
         except:
-            error = 'Ошибка cоздания отчета. Возможно файл уже открыт. Попробуйте снова.'
+            error = 'Ошибка создания отчета. Возможно файл уже открыт. Попробуйте снова.'
             self.MainWindow = ErrorAddReport(error)
             self.MainWindow.show()
 
     def report_montage_bd_push(self):
+        # Кнопка вывода отчета по монтажам
         try:
             date = self.dateEdit.date().toString('dd MMM yy')
             date_for_plan = self.dateEdit.date().toString('MMMM yyyy')
             monatge_excel(date, date_for_plan)
         except:
-            error = 'Ошибка cоздания отчета. Возможно файл уже открыт. Попробуйте снова.'
+            error = 'Ошибка создания отчета. Возможно файл уже открыт. Попробуйте снова.'
             self.MainWindow = ErrorAddReport(error)
             self.MainWindow.show()
 
 
 class MessageDialogWindow(QtWidgets.QMessageBox):
+    # Сообщение - подтверждение
     def __init__(self, title, text):
         super().__init__()
         self.title = title
