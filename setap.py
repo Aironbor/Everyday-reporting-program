@@ -37,7 +37,7 @@ if platform.system() == 'Windows':
     SETUP_DICT['windows'] = [{
         'Name': 'Ivan Metliaev',
         'product_name': 'Программа для управления отчетами',
-        'version': '3.2',
+        'version': '3.3',
         'description': 'Программа cоздана Метляевым Иваном специально для ООО "Тентовые Конструкции"',
         'copyright': '© 2022, ivan.metliaev.helper@gmail.com. All Rights Reserved',
         'script': 'main_script.py',
