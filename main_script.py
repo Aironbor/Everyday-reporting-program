@@ -1187,16 +1187,12 @@ class AddData(QMainWindow):
                 # Значение площади по проекту
                 rpolym_squer = 0
                 raskroy_py_squer = 0
-                stit_spu_squer = 0
                 gloe_p_squer = 0
-                assembl_p_squer = 0
                 punch_l_squer = 0
                 # Значение площади изготовленной продукции на тек. момент
                 rpolym_ready_squer = 0
                 raskroy_py_ready_squer = 0
-                stit_spu_ready_squer = 0
                 gloe_p_ready_squer = 0
-                assembl_p_ready_squer = 0
                 punch_l_ready_squer = 0
                 try:
                     sheet_1 = wb[f"Раскрой полипропилена"]
@@ -1232,18 +1228,6 @@ class AddData(QMainWindow):
                             ' (Наклейка синтепона). Исправьте файл.'
                     self.MainWindow = ErrorAddReport(error)
                     self.MainWindow.show()
-
-                try:
-                    sheet_5 = wb[f'Cборка без клея']
-                    assembl_polypr = round(sheet_5['J3'].value * 100, 2)
-                    assembl_p_squer = round(sheet_5['F3'].value, 2)
-                    assembl_p_ready_squer = round(sheet_5['L3'].value, 2)
-                    self.data_perc.append(assembl_polypr)
-                except:
-                    error = 'Отсутсвует значение в ячейках J3, F3, L3 (Сборка). Исправьте файл.'
-                    self.MainWindow = ErrorAddReport(error)
-                    self.MainWindow.show()
-
                 try:
                     sheet_6 = wb[f'Пробивка люверс']
                     punch_luverc = round(sheet_6['J3'].value * 100, 2)
@@ -1265,9 +1249,9 @@ class AddData(QMainWindow):
                     self.MainWindow = ErrorAddReport(error)
                     self.MainWindow.show()
                 squer_data_spu = [rpolym_ready_squer, raskroy_py_ready_squer,
-                                  gloe_p_ready_squer, assembl_p_ready_squer, punch_l_ready_squer]
+                                  gloe_p_ready_squer, punch_l_ready_squer]
                 common_summ_squer_from_prog = rpolym_squer + raskroy_py_squer + \
-                                              gloe_p_squer + assembl_p_squer + punch_l_squer
+                                              gloe_p_squer + punch_l_squer
                 # Вычисляем общий процент готовности и сумарную площадь СПУ
                 calculate_data = calculate_values(squer_data_spu, common_summ_squer_from_prog)
                 self.data_perc.append(calculate_data[0])
@@ -1414,7 +1398,7 @@ class AddData(QMainWindow):
                     db.delit_report_spu_data(progect_name, date)
                     db.add_report_spu(progect_name, date, self.data_perc[0], self.data_perc[1], self.data_perc[2],
                                       self.data_perc[3], self.data_perc[4], self.data_perc[5], self.data_perc[6],
-                                      self.data_perc[7], self.data_perc[8], key, real_date)
+                                      self.data_perc[7], key, real_date)
                 elif 'ПВХ' in self.filename or 'пвх' in self.filename or 'тентовое' in self.filename \
                         or 'полотно' in self.filename or 'тент' in self.filename:
                     db.delit_report_pvh_data(progect_name, date)
@@ -1597,6 +1581,7 @@ class PrintReport(QMainWindow):
         self.backButton.clicked.connect(self.back_btn_push)
         self.dateEdit.setDate(QtCore.QDate.currentDate())
         self.dateEdit.setDisplayFormat('dd.MM.yyyy')
+        self.MainWindow = ""
 
     def back_btn_push(self):
         # Кнопка назад
@@ -1606,11 +1591,15 @@ class PrintReport(QMainWindow):
 
     def report_bd_push(self):
         # Кнопка вывода отчета по производству
-
-        type_progect = self.type_progBox.currentText()
-        date = self.dateEdit.date().toString('dd MMM yy')
-        date_for_plan = self.dateEdit.date().toString('MMMM yyyy')
-        excel(type_progect, date, date_for_plan)
+        try:
+            type_progect = self.type_progBox.currentText()
+            date = self.dateEdit.date().toString('dd MMM yy')
+            date_for_plan = self.dateEdit.date().toString('MMMM yyyy')
+            excel(type_progect, date, date_for_plan)
+        except:
+            error = 'Ошибка создания отчета. Возможно файл уже открыт. Попробуйте снова.'
+            self.MainWindow = ErrorAddReport(error)
+            self.MainWindow.show()
 
     def report_montage_bd_push(self):
         # Кнопка вывода отчета по монтажам

@@ -140,6 +140,7 @@ class ExcelWork:
             self.report_excel_pvh()
 
     def report_excel_kmd(self):
+        # ОТЧЕТ ДЛЯ КМД
         kmd_plan = 0.0
         try:
             for kmd in db.get_kmd_plan_for_mounth(self.data_of_mounth_plan):
@@ -218,9 +219,8 @@ class ExcelWork:
         self.workbook.close()
         os.startfile(f'Отчеты\Отчет по цеху Металлоконструкций.xlsx')
 
-        # ОТЧЕТ ДЛЯ СПУ
-
     def report_excel_spu(self):
+        # ОТЧЕТ ДЛЯ СПУ
         tent_plan = 0.0
         try:
             for tent in db.get_spu_plan_for_mounth(self.data_of_mounth_plan):
@@ -271,15 +271,14 @@ class ExcelWork:
                 else:
                     worksheet_1.set_column(3, width_row, 15)
             # Записи Ход изготовления ангара
-            worksheet_1.merge_range(0, 0, 0, 8, f'Производственный отчет нарастающим итогом на отчетную дату',
+            worksheet_1.merge_range(0, 0, 0, 7, f'Производственный отчет нарастающим итогом на отчетную дату',
                                     self.name_merge_format_spec)
             worksheet_1.write(1, 0, "Проект:", self.name_format)
-            worksheet_1.merge_range(1, 1, 1, 8, f' ,'.join(progect_in_work), self.name_merge_format)
-            worksheet_1.merge_range(2, 0, 2, 8, f'Утеплитель', self.name_merge_format_2)
+            worksheet_1.merge_range(1, 1, 1, 7, f' ,'.join(progect_in_work), self.name_merge_format)
+            worksheet_1.merge_range(2, 0, 2, 7, f'Утеплитель', self.name_merge_format_2)
             row_name = ['№', 'Дата', 'Раскрой полипропилена',
                         'Раскрой ПУ',
                         'Наклейка синтепона',
-                        'Сборка без клея',
                         'Пробивка люверс',
                         'Упаковано',
                         'Общая готовность утеплителя']
@@ -302,25 +301,19 @@ class ExcelWork:
                     worksheet_1.write(curnt_numb_row, 3, '-', self.percent_format)
                 # % Наклейка
                 worksheet_1.write(curnt_numb_row, 4, info[5] / 100, self.percent_format)
-                # % Сборка
-                if info[6] is not None:
-                    worksheet_1.write(curnt_numb_row, 5, info[6] / 100, self.percent_format)
-                else:
-                    worksheet_1.write(curnt_numb_row, 5, '-', self.percent_format)
                 # % Пробивка люверс
-                worksheet_1.write(curnt_numb_row, 6, info[7] / 100, self.percent_format)
+                worksheet_1.write(curnt_numb_row, 5, info[6] / 100, self.percent_format)
                 # % Упаковка
-                worksheet_1.write(curnt_numb_row, 7, info[8] / 100, self.percent_format)
+                worksheet_1.write(curnt_numb_row, 6, info[7] / 100, self.percent_format)
                 # % готовности утеплителя
-                worksheet_1.write(curnt_numb_row, 8, info[9] / 100, self.percent_format)
+                worksheet_1.write(curnt_numb_row, 7, info[8] / 100, self.percent_format)
                 curnt_numb_row += 1
-            worksheet_1.conditional_format(4, 2, curnt_numb_row, 8, {'type': 'data_bar'})
+            worksheet_1.conditional_format(4, 2, curnt_numb_row, 7, {'type': 'data_bar'})
         self.workbook.close()
         os.startfile(f'Отчеты\Отчет по участку изготовления СПУ.xlsx')
 
-        # ОТЧЕТ ДЛЯ ПВХ
-
     def report_excel_pvh(self):
+        # ОТЧЕТ ДЛЯ ПВХ
         tent_plan = 0.0
         try:
             for tent in db.get_tent_plan_for_mounth(self.data_of_mounth_plan):

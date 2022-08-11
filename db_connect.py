@@ -165,17 +165,17 @@ class REPORT_DB():
                                      (progect_name, data,)) and self.connection.commit()
         return result
 
-    def add_report_spu(self, prog_name, date, raskroy_polypr, raskroy_py, gloe_polypr, assebml_spu,
+    def add_report_spu(self, prog_name, date, raskroy_polypr, raskroy_py, gloe_polypr,
                        punch_luverc, ready_prod, common_proc, spu_prog_sq, ready_squer_spu,
                        key, real_date):
         """Добавляем данные о изготовлении ангара в таблицу СПУ"""
         return self.cursor.execute("""INSERT INTO report_for_spu (progect_name, data_spu, raskroy_polypr, raskroy_py,
-         gloe_polypr, assebml_spu, punch_luverc, ready_prod, common_proc, spu_prog_sq,
+         gloe_polypr, punch_luverc, ready_prod, common_proc, spu_prog_sq,
           ready_squer_spu, key_progect, real_date)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?, ?)""", (prog_name, date, raskroy_polypr, raskroy_py,
-                                                     gloe_polypr, assebml_spu, punch_luverc, ready_prod, common_proc,
-                                                     spu_prog_sq, ready_squer_spu, key,
-                                                     real_date)) and self.connection.commit()
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""", (prog_name, date, raskroy_polypr, raskroy_py,
+                                               gloe_polypr, punch_luverc, ready_prod, common_proc,
+                                               spu_prog_sq, ready_squer_spu, key,
+                                               real_date)) and self.connection.commit()
 
     def get_info_ab_day_report_spu(self, prog_name):
         """Достаем всю информацию из таблицы готовности СПУ"""
