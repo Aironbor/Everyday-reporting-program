@@ -6,19 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>520</width>
+    <width>625</width>
     <height>600</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>350</width>
+    <width>625</width>
     <height>600</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>520</width>
+    <width>625</width>
     <height>600</height>
    </size>
   </property>
@@ -55,19 +55,19 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>521</width>
+      <width>630</width>
       <height>500</height>
      </rect>
     </property>
     <property name="minimumSize">
      <size>
-      <width>350</width>
+      <width>625</width>
       <height>500</height>
      </size>
     </property>
     <property name="maximumSize">
      <size>
-      <width>1000</width>
+      <width>625</width>
       <height>1000</height>
      </size>
     </property>
@@ -166,11 +166,25 @@
       <set>AlignCenter</set>
      </property>
     </column>
+    <column>
+     <property name="text">
+      <string>Монтаж</string>
+     </property>
+     <property name="font">
+      <font>
+       <family>Times New Roman</family>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="textAlignment">
+      <set>AlignCenter</set>
+     </property>
+    </column>
    </widget>
    <widget class="QLabel" name="label_develop">
     <property name="geometry">
      <rect>
-      <x>300</x>
+      <x>410</x>
       <y>520</y>
       <width>161</width>
       <height>20</height>
@@ -192,7 +206,7 @@
    <widget class="QLabel" name="logo">
     <property name="geometry">
      <rect>
-      <x>460</x>
+      <x>570</x>
       <y>500</y>
       <width>51</width>
       <height>51</height>
@@ -216,13 +230,13 @@
   <widget class="QToolBar" name="toolBar">
    <property name="minimumSize">
     <size>
-     <width>0</width>
+     <width>570</width>
      <height>0</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>16777215</width>
+     <width>600</width>
      <height>50</height>
     </size>
    </property>

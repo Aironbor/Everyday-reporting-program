@@ -1,6 +1,9 @@
+import locale
 import os
 import re
 import sys
+from calendar import monthrange
+
 from PyQt5.QtWidgets import QDialog
 from PyQt5.QtCore import *
 from datetime import datetime, date
@@ -15,16 +18,26 @@ from config import db
 class ExcelWork:
     def __init__(self, t_progect, n_date, date_for_plan):
         super().__init__()
-        self.type_prog = t_progect
-        self.date_of_report = n_date
-        self.data_of_mounth_plan = date_for_plan
+        # Получаем даты
+        self.type_prog = t_progect  # Тип проектной документации
+        self.date_of_report = n_date  # дата отчетная
+        self.data_of_mounth_plan = date_for_plan  # Полная дата
+        # Словарь номер месяца - название месяца
+        dict_month = {1: "янв", 2: "фев", 3: "мар", 4: "апр", 5: "мая", 6: "июн", 7: "июл", 8: "авг", 9: "сен", 10: "окт", 11: "ноя", 12: "дек"}
+        locale.setlocale(locale.LC_ALL, 'ru_RU')
+        datem = datetime.strptime(n_date, "%d %b %y")
+        self.name_month = dict_month[datem.month]
+        self.days = monthrange(datem.year, datem.month)[1]
         name_of_first_ws = ''
-        lbl_for_plan = ''
+        lbl_for_plan = 'План месяц, м2'
+        lbl_for_plan_day = 'План день, м2'
+        propertys_for_wb = {}
         if self.type_prog == 'КМД':
             self.workbook = xlsxwriter.Workbook("Отчеты/Отчет по цеху Металлоконструкций.xlsx")
             lbl_for_plan = "План месяц, т"
+            lbl_for_plan_day = "План день, т"
             name_of_first_ws = 'Сводный отчет по цеху Металлоконструкций'
-            self.workbook.set_properties({
+            propertys_for_wb = {
                 'title': f'Производственный отчет по производству КМД',
                 'subject': 'With document properties',
                 'author': 'Ivan Metliaev',
@@ -33,13 +46,12 @@ class ExcelWork:
                 'category': 'КМД',
                 'keywords': 'КМД, Ангары, Металл',
                 'created': datetime.today(),
-                'comments': 'Created with Python and Ivan Metliaev program'})
+                'comments': 'Created with Python and Ivan Metliaev program'}
 
         elif self.type_prog == 'СПУ':
             self.workbook = xlsxwriter.Workbook(f'Отчеты/Отчет по участку изготовления СПУ.xlsx')
             name_of_first_ws = 'Сводный отчет по участку производства утеплителя'
-            lbl_for_plan = "План месяц, м2"
-            self.workbook.set_properties({
+            propertys_for_wb = {
                 'title': f'Производственный отчет по производству СПУ',
                 'subject': 'With document properties',
                 'author': 'Ivan Metliaev',
@@ -48,12 +60,12 @@ class ExcelWork:
                 'category': 'СПУ',
                 'keywords': 'СПУ, Утеплитель, Покрытие',
                 'created': datetime.today(),
-                'comments': 'Created with Python and Ivan Metliaev program'})
+                'comments': 'Created with Python and Ivan Metliaev program'}
+
         elif self.type_prog == 'ПВХ':
             self.workbook = xlsxwriter.Workbook(f'Отчеты/Отчет изготовления тентового полотна.xlsx')
             name_of_first_ws = 'Сводный отчет по участку производства тентового полотна'
-            lbl_for_plan = "План месяц, м2"
-            self.workbook.set_properties({
+            propertys_for_wb = {
                 'title': f'Производственный отчет по производству ПВХ',
                 'subject': 'With document properties',
                 'author': 'Ivan Metliaev',
@@ -62,7 +74,9 @@ class ExcelWork:
                 'category': 'ПВХ',
                 'keywords': 'ПВХ, Тент, Покрытие',
                 'created': datetime.today(),
-                'comments': 'Created with Python and Ivan Metliaev program'})
+                'comments': 'Created with Python and Ivan Metliaev program'}
+        # Свойства файла
+        self.workbook.set_properties(propertys_for_wb)
         # Форматы format()
         self.percent_format = self.workbook.add_format(
             {'border': 1, 'num_format': '0.00%', 'align': 'left', 'valign': 'vcenter'})
@@ -117,49 +131,106 @@ class ExcelWork:
         })
         # Создаваемые листы
         self.worksheet_0 = self.workbook.add_worksheet(f'Сводный отчет')
+        self.worksheet_2 = self.workbook.add_worksheet(f'Отчет за {self.name_month}')
         # Размер колонок
-        self.worksheet_0.set_column(0, 0, 14)
-        self.worksheet_0.set_column(1, 1, 20)
-        self.worksheet_0.set_column(2, 2, 14)
-        self.worksheet_0.set_column(3, 3, 17)
-        self.worksheet_0.set_column(4, 4, 19)
-        self.worksheet_0.set_column(5, 5, 13)
-        self.worksheet_0.set_column(6, 6, 14)
+        size_of_colomn = [14, 20, 14, 17, 19, 17, 17]
+        column_num = 0
+        for size_col in size_of_colomn:
+            self.worksheet_0.set_column(column_num, column_num, size_col)
+            self.worksheet_2.set_column(column_num, column_num, size_col)
         # Записи Ход изготовления ангара
         self.worksheet_0.merge_range(0, 0, 0, 4, name_of_first_ws,
                                 self.name_merge_format)
         self.worksheet_0.write("F1", "Текущая дата:", self.name_format_main)
         self.worksheet_0.write("G1", f"{self.date_of_report}", self.date_format_main)
-        self.worksheet_0.write("A4", lbl_for_plan, self.name_format_main)
+        self.worksheet_0.write("A4", lbl_for_plan_day, self.name_format_main)
+        # Записи Ход изготовления ангара
+        self.worksheet_2.merge_range(0, 0, 0, 4, f"{name_of_first_ws} за {self.name_month}",
+                                     self.name_merge_format)
+        self.worksheet_2.write("F1", "Текущая дата:", self.name_format_main)
+        self.worksheet_2.write("G1", f"{self.date_of_report}", self.date_format_main)
+        self.worksheet_2.write("A4", lbl_for_plan, self.name_format_main)
         if self.type_prog == 'КМД':
             self.report_excel_kmd()
         elif self.type_prog == 'СПУ':
             self.report_excel_spu()
-
         elif self.type_prog == 'ПВХ':
             self.report_excel_pvh()
 
     def report_excel_kmd(self):
         # ОТЧЕТ ДЛЯ КМД
+        # Сводный отчет за день!
         kmd_plan = 0.0
         try:
             for kmd in db.get_kmd_plan_for_mounth(self.data_of_mounth_plan):
                 kmd_plan = kmd
         except:
             pass
-        self.worksheet_0.write("B4", kmd_plan, self.numb_w_border)
+        self.worksheet_0.write("B4", kmd_plan / self.days, self.numb_w_border)
         self.worksheet_0.write("A5", f"Выполнение плана", self.name_format_main)
         self.worksheet_0.write_formula("B5", f"Выполнение плана", self.name_format_main)
         row_name = ['№', 'Проект', 'По проекту, т', 'Изготовлено на текущ. момент, т', 'Производственная готовность']
         # Заголовки первой таблицы
-        curnt_numb_row = 7
         num = 0
+        num_2 = 0
         self.worksheet_0.write_row(6, 0, row_name, self.name_format)
+        curnt_row_month_report = 7
+        for montage in db.get_all_active_montage_progect():
+            montage_key = montage[1]
+            check = 0
+            count_days = 0
+            quantity_of_product_day = 0
+            for progect_data in db.get_about_progect_and_ready_mass(montage_key):
+                count_days += 1
+            for month_progect_data in db.get_info_about_month_kmd_report(montage_key):
+                # Проверяем наличие месяца в дате
+                if self.name_month in month_progect_data[4]:
+                    quantity_of_product_day += 1
+                    if check == 0:
+                        # №
+                        num_2 += 1
+                        self.worksheet_2.write(curnt_row_month_report, 0, num_2, self.special_numb)
+                        # Проект
+                        self.worksheet_2.write(curnt_row_month_report, 1, month_progect_data[0], self.name_format)
+                        # По проекту
+                        self.worksheet_2.write(curnt_row_month_report, 2, month_progect_data[1] / 1000,
+                                               self.float_numb_w_board)
+                        # Готовность
+                        self.worksheet_2.write(curnt_row_month_report, 3, month_progect_data[2] / 1000,
+                                               self.float_numb_w_board)
+                        # Процент
+                        self.worksheet_2.write(curnt_row_month_report, 4, month_progect_data[3] / 100,
+                                               self.percent_format)
+                        check = 1
+                        curnt_row_month_report += 1
+                    # Количество дней в этом месяце
+                    self.worksheet_2.write(curnt_row_month_report - 1, 5, quantity_of_product_day, self.special_numb)
+                    # Количество дней в общем
+                    self.worksheet_2.write(curnt_row_month_report - 1, 6, count_days, self.special_numb)
+                    # Сводный отчет за МЕСЯЦ!
+            self.worksheet_2.write("B4", kmd_plan, self.numb_w_border)
+            self.worksheet_2.write("A5", f"Выполнение плана", self.name_format_main)
+            self.worksheet_2.write_formula("B5", f"Выполнение плана", self.name_format_main)
+            row_name_for_month = ['№', 'Проект', 'По проекту, т', 'Изготовлено на текущ. момент, т',
+                                  'Производственная готовность', f'Кол-во дней в производстве в {self.name_month}',
+                                  f'Всего дней производства проекта']
+        # Заголовки первой таблицы
+        num = 0
+        self.worksheet_2.write_row(6, 0, row_name_for_month, self.name_format)
+        self.worksheet_2.write_formula(curnt_row_month_report, 3,
+                                       f'=SUM(D8:D{curnt_row_month_report})', self.float_numb_w_board)
+        self.worksheet_2.write_formula("B5", f'=D{curnt_row_month_report + 1}/B4', self.percent_format_for_plan)
+        self.worksheet_2.merge_range(curnt_row_month_report, 0, curnt_row_month_report, 2, f'Итого:',
+                                     self.name_merge_format_spec)
+        self.worksheet_2.conditional_format(7, 4, curnt_row_month_report, 4, {'type': 'data_bar'})
+        self.worksheet_2.ignore_errors()
         curnt_special_row = 7
         for info in db.get_massa_progect():
             key = info[1]
+            print(key, self.date_of_report)
             for progect_data in db.get_info_about_today_kmd_report(key, self.date_of_report):
                 # №
+                print(progect_data)
                 num += 1
                 self.worksheet_0.write(curnt_special_row, 0, num, self.special_numb)
                 # Проект
@@ -171,13 +242,14 @@ class ExcelWork:
                 # Процент
                 self.worksheet_0.write(curnt_special_row, 4, progect_data[3] / 100, self.percent_format)
                 curnt_special_row += 1
-            curnt_numb_row += 1
+
         self.worksheet_0.write_formula(curnt_special_row, 3, f'=SUM(D8:D{curnt_special_row})', self.float_numb_w_board)
         self.worksheet_0.write_formula("B5", f'=D{curnt_special_row + 1}/B4', self.percent_format_for_plan)
         self.worksheet_0.merge_range(curnt_special_row, 0, curnt_special_row, 2, f'Итого:',
                                 self.name_merge_format_spec)
         self.worksheet_0.conditional_format(7, 4, curnt_special_row, 4, {'type': 'data_bar'})
         self.worksheet_0.ignore_errors()
+        # Добавление проектов в excel лист
         for progect_in_work in db.get_info_progect_kmd():
             worksheet_1 = self.workbook.add_worksheet(f''.join(progect_in_work))
             # Размер колонок
@@ -246,16 +318,16 @@ class ExcelWork:
                 # Проект
                 self.worksheet_0.write(curnt_numb_row, 1, progect_data[0], self.name_format)
                 # По проекту
-                self.worksheet_0.write(curnt_numb_row, 2, progect_data[1] / 1000, self.float_numb_w_board)
+                self.worksheet_0.write(curnt_numb_row, 2, progect_data[1], self.float_numb_w_board)
                 # Готовность
-                self.worksheet_0.write(curnt_numb_row, 3, progect_data[2] / 1000, self.float_numb_w_board)
+                self.worksheet_0.write(curnt_numb_row, 3, progect_data[2], self.float_numb_w_board)
                 # Процент готовности
                 self.worksheet_0.write(curnt_numb_row, 4, progect_data[3] / 100, self.percent_format)
                 # Процент отгрузки
-                self.worksheet_0.write(curnt_numb_row, 4, progect_data[4] / 100, self.percent_format)
+                self.worksheet_0.write(curnt_numb_row, 5, progect_data[4] / 100, self.percent_format)
                 curnt_special_row += 1
+                curnt_numb_row += 1
 
-            curnt_numb_row += 1
         self.worksheet_0.write_formula(curnt_special_row, 3, f'=SUM(D8:D{curnt_special_row})', self.float_numb_w_board)
         self.worksheet_0.write_formula("B5", f'=D{curnt_special_row + 1}/B4', self.percent_format_for_plan)
         self.worksheet_0.merge_range(curnt_special_row, 0, curnt_special_row, 2, f'Итого:',
@@ -345,10 +417,10 @@ class ExcelWork:
                 # Процент готовности
                 self.worksheet_0.write(curnt_numb_row, 4, progect_data[3] / 100, self.percent_format)
                 # Процент отгрузки
-                self.worksheet_0.write(curnt_numb_row, 4, progect_data[4] / 100, self.percent_format)
+                self.worksheet_0.write(curnt_numb_row, 5, progect_data[4] / 100, self.percent_format)
+                curnt_numb_row += 1
                 curnt_special_row += 1
 
-            curnt_numb_row += 1
         self.worksheet_0.write_formula(curnt_special_row, 3, f'=SUM(D8:D{curnt_special_row})', self.float_numb_w_board)
         self.worksheet_0.write_formula("B5", f'=D{curnt_special_row + 1}/B4', self.percent_format_for_plan)
         self.worksheet_0.merge_range(curnt_special_row, 0, curnt_special_row, 2, f'Итого:',

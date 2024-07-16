@@ -43,6 +43,7 @@ class REPORT_DB():
         self.cursor.execute("""SELECT progect_name FROM progect_main WHERE kmd_active = TRUE""")
         return self.cursor.fetchall()
 
+
     def get_info_progect_tent(self):
         """Получаем информацию о проектах"""
         self.cursor.execute("""SELECT progect_name FROM progect_main WHERE tent_common_active = TRUE""")
@@ -141,7 +142,7 @@ class REPORT_DB():
     def add_reporting_data(self, prog_name=str, date='dd MMM yy', blank_per=str, weld_per=str, print_per=str,
                            common_report_per=str, ready_massa=str, kmd_prog_massa=str, key=str, real_date=str):
         """Добавляем данные о изготовлении ангара в таблицу КМД"""
-        return self.cursor.execute("""INSERT INTO report_for_progect_2 (progect_name, data, blank_perc,
+        return self.cursor.execute("""INSERT INTO report_for_progect_2 (progect_name, date_kmd, blank_perc,
          weld_perc, print_perc, report_ready_perc, kmd_prog_massa, ready_massa, key_progect, real_date)
          VALUES (?,?,?,?,?,?, ?,?,?,?)""", (prog_name, date, blank_per, weld_per, print_per,
                                             common_report_per, kmd_prog_massa, ready_massa, key,
@@ -156,12 +157,24 @@ class REPORT_DB():
     def get_info_about_today_kmd_report(self, key, date='dd MMM yy'):
         """Достаем всю информацию из таблицы готовности КМД"""
         self.cursor.execute("""SELECT progect_name, kmd_prog_massa, ready_massa, report_ready_perc
-         FROM report_for_progect_2 WHERE key_progect = ? and data = ? ORDER BY real_date ASC""", (key, date,))
+         FROM report_for_progect_2 WHERE key_progect = ? and date_kmd = ? ORDER BY real_date ASC""", (key, date,))
+        return self.cursor.fetchall()
+
+    def get_info_about_month_kmd_report(self, key):
+        """Достаем всю информацию из таблицы готовности КМД за месяц"""
+        self.cursor.execute("""SELECT progect_name, kmd_prog_massa, ready_massa, report_ready_perc, date_kmd
+         FROM report_for_progect_2 WHERE key_progect = ? ORDER BY real_date DESC""", (key,))
+        return self.cursor.fetchall()
+
+    def get_about_progect_and_ready_mass(self, key):
+        """Достаем все дни по проекту для подсчета общего количества """
+        self.cursor.execute("""SELECT progect_name, ready_massa FROM report_for_progect_2 WHERE key_progect = ?
+         ORDER BY real_date DESC""", (key,))
         return self.cursor.fetchall()
 
     def delit_data_report(self, progect_name=str, data=str):
         """Удаляем информацию о КМД"""
-        result = self.cursor.execute("""DELETE FROM report_for_progect_2 WHERE progect_name = ? and data = ?""",
+        result = self.cursor.execute("""DELETE FROM report_for_progect_2 WHERE progect_name = ? and date_kmd = ?""",
                                      (progect_name, data,)) and self.connection.commit()
         return result
 
@@ -207,7 +220,7 @@ class REPORT_DB():
                        weld_nashelnik=str, ready_prod=str, common_proc=str, pvh_prog_sq=str, ready_squer_pvh=str,
                        key=str, real_date=str):
         """Добавляем данные о изготовлении ангара в таблицу ПВХ"""
-        return self.cursor.execute("""INSERT INTO report_for_pvh (progect_name, data, raskroy_polotna, raskroy_pockets, nashelnik,
+        return self.cursor.execute("""INSERT INTO report_for_pvh (progect_name, date_pvh, raskroy_polotna, raskroy_pockets, nashelnik,
          weld_pockets, weld_in_pockets, stitching, weld_nashelnik, ready_prod, common_proc, pvh_prog_sq, ready_squer_pvh, key_progect, real_date)
          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""", (prog_name, date, raskroy_polotna, raskroy_pockets,
                                                      nashelnik, weld_pockets, weld_in_pockets, stitching,
@@ -221,15 +234,16 @@ class REPORT_DB():
         return self.cursor.fetchall()
 
     def get_info_about_today_pvh_report(self, key, date='dd MMM yy'):
-        """Достаем всю информацию из таблицы готовности КМД"""
+        """Достаем всю информацию из таблицы готовности ПВХ"""
         self.cursor.execute(
-            """SELECT progect_name, pvh_prog_sq, ready_squer_pvh, common_proc, ready_prod FROM report_for_pvh WHERE key_progect = ? and data = ?""",
+            """SELECT progect_name, pvh_prog_sq, ready_squer_pvh, common_proc, ready_prod
+             FROM report_for_pvh WHERE key_progect = ? and date_pvh = ?""",
             (key, date,))
         return self.cursor.fetchall()
 
     def delit_report_pvh_data(self, progect_name=str, data=str):
         """Удаляем информацию о ПВХ"""
-        result = self.cursor.execute("""DELETE FROM report_for_pvh WHERE progect_name = ? and data = ?""",
+        result = self.cursor.execute("""DELETE FROM report_for_pvh WHERE progect_name = ? and date_pvh = ?""",
                                      (progect_name, data,)) and self.connection.commit()
         return result
 

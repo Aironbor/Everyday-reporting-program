@@ -184,7 +184,7 @@ class ProgTable(QMainWindow):
         uic.loadUi('ui/progect_name_table.ui', self)
         # Установим размеры колонок
         self.maintable.setColumnWidth(0, 250)
-        for c in range(1, 4):
+        for c in range(1, 5):
             self.maintable.setColumnWidth(c, 50)
         self.load_data_for_table()  # Загрузка данных в таблицу
         self.maintable.setWordWrap(True)  # Установим перенос слов в таблице
@@ -218,6 +218,10 @@ class ProgTable(QMainWindow):
                 else:
                     self.maintable.setItem(tablerow, col, set_row_in_table('X'))
                 col += 1
+            if row[6] is True or row[6] == 1:
+                self.maintable.setItem(tablerow, 4, set_row_in_table('V'))
+            else:
+                self.maintable.setItem(tablerow, 4, set_row_in_table('X'))
             tablerow += 1
 
     def add_str_btn(self):
@@ -293,7 +297,10 @@ class DialogAdd(QDialog):
             db.update_disactive_pvh(prog)
         if self.spu_checkBox.isChecked() and self.pvh_checkBox.isChecked():
             db.update_active_tent(prog)
-        # Выводим сообщение об успехе
+        if self.montag_checkBox.isChecked():
+            db.update_active_montage(prog)
+        else:
+            db.update_disactive_montage(prog)
         message_title = "Успешное добавление"
         message_text = f"Проект успешно добавлен в базу данных."
         msg = MessageDialogWindow(message_title, message_text)
@@ -320,6 +327,8 @@ class DialogEdit(QDialog):
                 self.spu_checkBox.setChecked(True)
             if p[4] is True or p[4] == 1:
                 self.pvh_checkBox.setChecked(True)
+            if p[6] is True or p[6] == 1:
+                self.montag_checkBox.setChecked(True)
 
     def change_prog_btn(self):
         # Кнопка Редактирования позиции проекта
@@ -341,6 +350,11 @@ class DialogEdit(QDialog):
                 db.update_disactive_pvh(progect)
             if self.spu_checkBox.isChecked() and self.pvh_checkBox.isChecked():
                 db.update_active_tent(progect)
+            if self.montag_checkBox.isChecked():
+                db.update_active_montage(progect)
+            else:
+                db.update_disactive_montage(progect)
+
             # Выводим сообщение об успехе
             message_title = "Успешное изменение"
             message_text = f"Данные проекта успешно изменены."
@@ -1180,7 +1194,6 @@ class AddData(QMainWindow):
                 self.data_perc.append(calculate_data[0])
                 self.data_perc.append(calculate_data[1])
                 self.data_perc.append(summa_massa_for_prog)
-                print(common_ready_massa_data)
 
             elif 'СПУ' in self.filename or 'утеплит' in self.filename \
                     or 'утеплитель' in self.filename or 'Утеплитель' in self.filename or 'теплит' in self.filename:
@@ -1475,7 +1488,6 @@ class AddMontageData(QMainWindow):
                 wb = load_workbook(f"{self.path_to_exel}", data_only=True)
                 # Из базы данных берутся все активные проекты и используется в качестве имени листа
                 for progect_data in db.get_all_active_montage_progect():
-                    print(progect_data)
                     sheet_ranges_1 = wb[progect_data[0]]
             except:
                 error = f'Файл не выбран! В данном файле не все активные проекты.'
@@ -1591,15 +1603,10 @@ class PrintReport(QMainWindow):
 
     def report_bd_push(self):
         # Кнопка вывода отчета по производству
-        try:
-            type_progect = self.type_progBox.currentText()
-            date = self.dateEdit.date().toString('dd MMM yy')
-            date_for_plan = self.dateEdit.date().toString('MMMM yyyy')
-            excel(type_progect, date, date_for_plan)
-        except:
-            error = 'Ошибка создания отчета. Возможно файл уже открыт. Попробуйте снова.'
-            self.MainWindow = ErrorAddReport(error)
-            self.MainWindow.show()
+        type_progect = self.type_progBox.currentText()
+        date = self.dateEdit.date().toString('dd MMM yy')
+        date_for_plan = self.dateEdit.date().toString('MMMM yyyy')
+        excel(type_progect, date, date_for_plan)
 
     def report_montage_bd_push(self):
         # Кнопка вывода отчета по монтажам
